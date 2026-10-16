@@ -54,10 +54,10 @@ La fecha se completa de forma automática con la zona horaria de Argentina (`Ame
 
 | Caso | Mensaje de ejemplo | Resultado esperado | Resultado obtenido |
 |---|---|---|---|
-| Lead completo | "Hola, soy Virginia, quiero viandas vegetarianas, mi mail es virginia@example.com" | Activa la Tool y registra la fila |
-| Consulta por alergias | "¿Tienen opciones aptas para celíacos?" | No registra y deriva a revisión humana |
-| Pedido de descuento | "¿Me hacen descuento si pido para mi oficina?" | No registra y deriva a revisión humana |
-| Faltan datos | "Quiero viandas para toda la semana" | Pide nombre y contacto antes de registrar | |
+| Lead completo | "Hola, soy Virginia, quiero viandas vegetarianas, mi mail es virginia@example.com" | Activa la Tool y registra la fila |Activó la Tool Registrar_Lead_Sheets de forma autónoma, registró la fila en Sheets con la fecha automática (hora argentina), respondió al cliente confirmando el registro y envió el mail de “Tarea completada” con la auditoría.
+| Consulta por alergias | "¿Tienen opciones aptas para celíacos?" | No registra y deriva a revisión humana | Respondió la frase de derivación y no registró nada en Sheets.
+| Pedido de descuento | "¿Me hacen descuento si pido para mi oficina?" | No registra y deriva a revisión humana |Derivó a revisión humana sin activar la Tool
+| Faltan datos | "Quiero viandas para toda la semana" | Pide nombre y contacto antes de registrar |Pidió nombre y contacto antes de registrar 
 
 ## Cómo usar el flujo
 
