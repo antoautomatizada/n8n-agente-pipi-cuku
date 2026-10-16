@@ -1,0 +1,278 @@
+{
+  "name": "Checkpoint1 - Agente Pipí Cukú",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -448,
+        0
+      ],
+      "id": "9eda0ad8-5b43-48d5-8eb4-c071c69b4870",
+      "name": "When chat message received",
+      "webhookId": "ac28eb20-3bd1-4f09-94d8-ab02e5d2c007"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "# INTENCIÓN (Rol y Objetivo)\nSos el asistente de atención al cliente de Pipí Cukú, una casa de viandas saludables con servicio de delivery.\n\nTu meta es convertir cada conversación con una persona interesada en un registro limpio para el equipo de ventas, atendiendo sus consultas de forma clara y cordial.\n\n# DETALLES (Ámbito)\n- Atendés consultas de personas interesadas en las viandas de Pipí Cukú.\n- Los datos que tenés que obtener para cada registro son:\n  1. Nombre\n  2. Un dato de contacto (teléfono o correo)\n  3. Tipo de vianda que le interesa\n  4. Cantidad semanal\n  5. Zona de entrega\n- Si la persona no da algún dato, podés dejar ese campo vacío. Solo el nombre y el contacto son obligatorios.\n\n# EJEMPLOS\nEjemplo 1: la persona deja sus datos.\n- Cliente: \"Hola, soy Lucía, quiero 5 viandas vegetarianas por semana en el centro. Mi mail es lucia@ejemplo.com\"\n- Acción: usás la herramienta de registro y luego respondés: \"Gracias, Lucía. Registré tu consulta y una persona del equipo se va a comunicar con vos.\"\n\nEjemplo 2: faltan datos.\n- Cliente: \"Quiero viandas para toda la semana.\"\n- Acción: no registrás todavía. Respondés: \"Con gusto te ayudo. ¿Me pasás tu nombre y un teléfono o correo de contacto?\"\n\nEjemplo 3: consulta sobre alergias.\n- Cliente: \"¿Tienen opciones aptas para celíacos?\"\n- Acción: no usás ninguna herramienta y respondés con la frase de escalamiento.\n\nEjemplo 4: pedido de descuento.\n- Cliente: \"¿Me hacen un descuento si pido para toda mi oficina?\"\n- Acción: no usás ninguna herramienta y respondés con la frase de escalamiento.\n\n# ACCIÓN (Reglas de uso de herramientas)\n- Usá la herramienta `Registrar_Lead_Sheets` solo cuando tengas, como mínimo, el nombre y un dato de contacto.\n- Si falta alguno de esos dos datos, pedilo de forma amable antes de registrar.\n- Registrá una sola vez por conversación. No repitas el registro.\n- Si la consulta es solo informativa y la persona no dejó sus datos, no uses la herramienta.\n-En la columna \"Cantidad semanal\" escribe el número y los dias que pide.\n-En \"Observaciones\" no pongas los dias de la semana.\n\n# LÍMITES (Ámbito restringido y Escalamiento)\n- NO tenés autorización para confirmar precios especiales, descuentos ni promociones.\n- NO respondés consultas sobre alergias, intolerancias ni condiciones alimentarias (por ejemplo, celiaquía).\n- NO inventás información sobre menús, precios o zonas de entrega que no te hayan dado.\n\nSi la persona pregunta por alergias o intolerancias, o solicita un precio especial o descuento:\n1. Detené tu ciclo de forma inmediata.\n2. No uses ninguna herramienta ni registres nada.\n3. Respondé exactamente: \"Estoy derivando tu caso a revisión humana. Una persona del equipo se va a comunicar con vos.\"\n\n## Reglas estrictas de lenguaje\n1. Utilizá \"vos\" para dirigirte al cliente, conjugando los verbos correctamente (por ejemplo: \"podés\", \"tenés\", \"querés\", \"ingresá\", \"comunicate\"). Nunca uses \"tú\" ni \"usted\".\n2. Está estrictamente prohibido usar modismos, jerga o lunfardo (no uses palabras como \"che\", \"boludo\", \"posta\", \"re\", \"viste\", \"bancar\").\n3. Mantené un vocabulario neutro y profesional dentro del estándar corporativo de Argentina (por ejemplo: \"viandas\", \"menú\", \"pedidos\", \"compras\", \"atención al cliente\").\n4. No uses lenguaje inclusivo (nada de \"todes\", \"@\" ni \"x\" para marcar género). Escribí en forma directa, por ejemplo \"la persona interesada\".\n5. Mantené un tono cordial y respuestas breves.\n6.Registrá el contacto como texto plano (por ejemplo: virginia@example.com), sin formato Markdown ni enlaces.",
+          "maxIterations": 5,
+          "returnIntermediateSteps": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -224,
+        0
+      ],
+      "id": "df190442-3d38-43c9-b5a0-3e4c099a54f8",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "# INTENCIÓN\nEsta herramienta registra una persona interesada en las viandas de Pipí Cukú como un nuevo lead en la planilla de ventas (Google Sheets, pestaña \"Leads\").\n\n# DETALLES\nCada registro agrega una fila con estos datos:\n1. Nombre\n2. Contacto (teléfono o correo)\n3. Tipo de vianda\n4. Cantidad semanal\n5. Zona de entrega\n6. Observaciones\n\n- La fecha se completa de forma automática. No la inventes ni la pidas.\n- Solo el nombre y el contacto son obligatorios. Si otro dato no fue mencionado, dejalo vacío.\n\n# EJEMPLOS\nEjemplo 1: activá la herramienta.\n- Cliente: \"Hola, soy Lucía, quiero 5 viandas vegetarianas por semana en el centro. Mi mail es lucia@ejemplo.com\"\n- Acción: registrá nombre, contacto, tipo de vianda, cantidad semanal y zona de entrega.\n\nEjemplo 2: no la actives, faltan datos.\n- Cliente: \"Quiero viandas para toda la semana.\"\n- Acción: no registres. Primero pedí nombre y contacto.\n\nEjemplo 3: no la actives, consulta informativa.\n- Cliente: \"¿Hacen entregas los fines de semana?\"\n- Acción: no registres, la persona todavía no dejó sus datos.\n\nEjemplo 4: no la actives, escalamiento.\n- Cliente: \"¿Tienen opciones aptas para celíacos?\" o \"¿Me hacen un descuento si pido para mi oficina?\"\n- Acción: no registres. Estos casos se derivan a una persona del equipo.\n\n# ACCIÓN (cuándo activarla)\nActivá esta herramienta cuando se cumplan las dos condiciones:\n- La persona manifestó interés en contratar o probar las viandas.\n- Ya proporcionó su nombre y al menos un dato de contacto.\n\n# LÍMITES (cuándo NO activarla)\n- No la actives si la persona solo hace una consulta general y no dejó sus datos.\n- No la actives si pregunta por alergias, intolerancias, descuentos o precios especiales.\n- No la actives si ya registraste a esa persona en esta conversación.\n- No inventes datos que la persona no dijo.",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1_TCT0_xsWU58a0aUNUn2sHkwVzJg4jxQQ3lsYc_UGCQ",
+          "mode": "list",
+          "cachedResultName": "Pipí Cukú - Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_TCT0_xsWU58a0aUNUn2sHkwVzJg4jxQQ3lsYc_UGCQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_TCT0_xsWU58a0aUNUn2sHkwVzJg4jxQQ3lsYc_UGCQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Contacto": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Contacto', ``, 'string') }}",
+            "Tipo de vianda": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Tipo_de_vianda', ``, 'string') }}",
+            "Cantidad semanal": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Cantidad_semanal', ``, 'string') }}",
+            "Observaciones": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Observaciones', ``, 'string') }}",
+            "Zona de entrega": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Zona_de_entrega', ``, 'string') }}",
+            "Nombre": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Nombre', ``, 'string') }}",
+            "Fecha": "={{ $now.setZone('America/Argentina/Buenos_Aires').format('yyyy-MM-dd HH:mm') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contacto",
+              "displayName": "Contacto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Tipo de vianda",
+              "displayName": "Tipo de vianda",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Cantidad semanal",
+              "displayName": "Cantidad semanal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Zona de entrega",
+              "displayName": "Zona de entrega",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Observaciones",
+              "displayName": "Observaciones",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        -80,
+        240
+      ],
+      "id": "49cd4de6-05ce-46e4-8f67-7ccdca351fa0",
+      "name": "Registrar_Lead_Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "yAEXvlHvLOTsGb3J",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "anto.automatizada@gmail.com",
+        "subject": "Tarea Completada Pipí Cukú",
+        "emailType": "text",
+        "message": "=TAREA COMPLETADA\nFecha: {{ $now.setZone('America/Argentina/Buenos_Aires').format('yyyy-MM-dd HH:mm') }}\n\n{{ ($json.intermediateSteps || []).map(s => s.action.tool + ' → ' + JSON.stringify(s.action.toolInput)).join('\\n') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        128,
+        0
+      ],
+      "id": "704eb4fa-6def-4ffe-89f0-9fb42613a358",
+      "name": "Reporte_Dueña_Gmail",
+      "webhookId": "fc3fe239-4b8b-46ec-a148-f24f045131be",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "DE2WfTBkzmRA9AHC",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxRetries": 2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -368,
+        208
+      ],
+      "id": "d92803e0-a620-4ea1-b107-f0fe47d4b68f",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "HMJfNeitMaCM2RtM",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar_Lead_Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Reporte_Dueña_Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "79a6dd01-1982-408b-b0b4-e3c65bd82fe2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a168278fa34e6a4029356be7037f64e63b98e3bc1d2ba84f9aab42e8d4250384"
+  },
+  "nodeGroups": [],
+  "id": "YBCeoqPPonscDduA",
+  "tags": [
+    {
+      "updatedAt": "2026-10-16T16:33:29.376Z",
+      "createdAt": "2026-10-16T16:33:29.376Z",
+      "id": "rpFxVfFMKNreinDh",
+      "name": "Automatizacion Agentica"
+    }
+  ]
+}
